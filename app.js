@@ -7,6 +7,9 @@ const expressLayouts = require('express-ejs-layouts');
 const adminRoute = require('./routes/admin');
 const shopRoute = require('./routes/shop');
 
+
+const mongoConnect = require('./util/database').mongoConnect;
+
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -25,4 +28,6 @@ app.use((req, res, next) => {
         path: ' '
     });
 });
-app.listen(3000);
+mongoConnect(()=>{
+    app.listen(3000);
+});

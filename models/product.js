@@ -1,48 +1,42 @@
-const fs = require('fs');
-const path = require('path');
+const mongodb = require('mongodb');
+const getDb = require('../util/database').getDb;
 
-const getProductsFromFile = cb => {
-    const p = path.join(path.dirname(process.mainModule.filename), 'data', 'product.json');
-    fs.readFile(p, (err, fileContent) => {
-        if (err) {
-            cb([]);
-        }
-        cb(JSON.parse(fileContent));
-    })
-}
-module.exports = class Product {
-    constructor(title, imageUrl, price, description) {
+class Product{
+    constructor(title, imageUrl, price, description){
         this.title = title;
         this.imageUrl = imageUrl;
         this.price = price;
         this.description = description;
     }
     save() {
-        this.id = Math.random().toString();
-        const p = path.join(path.dirname(process.mainModule.filename), 'data', 'product.json');
-        fs.readFile(p, (err, fileContent) => {
-            let products = [];
-            if (!err) {
-                products = JSON.parse(fileContent);
-            }
-            console.log(products);
-            products.push(this);
-            console.log(products);
-            fs.writeFile(p, JSON.stringify(products), (err) => {
-                if (err) {
-                    console.log(err);
-                }
-            });
-        });
-
+        const db = getDb();
+        return db.collection('products').insertOne(this)
+        .then(result=>{
+            console.log(result);
+        })
+        .catch(err=>{
+            console.log(err);
+        })
     }
-    static fetchAll(cb) {
-        getProductsFromFile(cb);
+    static fetchAll(){
+        const db = getDb();
+        return db.collection('products').find().toArray()
+        .then(products=>{
+            return products;
+        })
+        .catch(err=>{
+            console.log(err);
+        })
     }
-    static findById(id, cb) {
-        getProductsFromFile(products => {
-            const product = products.find(p => p.id === id);
-            cb(product);
+    static findById(prodId){
+        const db = getDb();
+        return db.collection('products').find({_id: new mongodb.ObjectId(prodId)}).next()
+        .then(product=>{
+            return product;
+        })
+        .catch(err=>{
+            console.log(err);
         })
     }
 }
+module.exports = Product;
