@@ -27,9 +27,11 @@
                         </p>
 
                         <div class="d-flex ml-5 pl-3">
-                            <a href="/products/<%= product._id %>" class="btn btn-outline-black btn-rounded btn-sm px-3 waves-effect">Details</a>
-                            <form action="/cart" method="post">
-                                <button class="btn btn-black btn-rounded btn-sm px-3 waves-effect" type="submit">Add to Cart</button>
+                            <a href="/products/<%= product._id %>"
+                                class="btn btn-outline-black btn-rounded btn-sm px-3 waves-effect">Details</a>
+                            <form action="/cart" method="POST">
+                                <button class="btn btn-black btn-rounded btn-sm px-3 waves-effect" type="submit">Add to
+                                    Cart</button>
                                 <input type="hidden" name="productId" value="<%= product._id %>">
                             </form>
                         </div>
