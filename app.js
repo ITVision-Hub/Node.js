@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 // const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
 
+const mongoose = require('mongoose');
 //import from models
 const User = require('./models/user');
 
@@ -11,8 +12,6 @@ const User = require('./models/user');
 const adminRoute = require('./routes/admin');
 const shopRoute = require('./routes/shop');
 
-
-const mongoConnect = require('./util/database').mongoConnect;
 
 const app = express();
 
@@ -24,9 +23,9 @@ app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
 app.use((req, res, next) => {
-    User.findById("5e54d3781c9d4400000f8fae")
+    User.findById("5e5e1d73fe0adb00b4bf87c6")
         .then(user => {
-            req.user = new User(user.name, user.email, user.cart, user._id);
+            req.user = user;
             //console.log(req.user)
             next();
         })
@@ -44,6 +43,27 @@ app.use((req, res, next) => {
         path: ' '
     });
 });
-mongoConnect(() => {
-    app.listen(3000);
-});
+
+mongoose.connect('mongodb+srv://admin:onlineshoptesting123@onlineshop-pfdfx.mongodb.net/shop', { useNewUrlParser: true })
+    .then(result => {
+        User.findOne()
+            .then(user => {
+                if (!user) {
+                    const user = new User({
+                        name: 'john',
+                        email: 'john@gmail.com',
+                        cart: {
+                            items: [
+
+                            ]
+                        }
+                    })
+                    user.save();
+                }
+            })
+        console.log('Connected DB....');
+        app.listen(3000)
+    })
+    .catch(err => {
+        console.log(err);
+    })
